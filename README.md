@@ -26,10 +26,6 @@ cd Frontend
 npm i
 npm start
 ```
-Для `REACT_APP_API_URL` в `.env` серверная часть по умолчанию идёт по `http://localhost:3001/api`.
-                    │ │ │
-                    V V V 
-`REACT_APP_API_URL=http://localhost:3001/api`
 
 Если использовать npm run seed, то пользователь/пароль:
 - admin@mail.com / admin123 # админ

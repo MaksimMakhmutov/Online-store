@@ -1,0 +1,15 @@
+# Общие
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+
+# Frontend
+Frontend/node_modules
+Frontend/build
+
+# Backend
+Backend/node_modules
+Backend/public
