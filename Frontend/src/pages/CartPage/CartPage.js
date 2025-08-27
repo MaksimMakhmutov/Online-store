@@ -1,56 +1,20 @@
-import {
-  getCart,
-  updateCartItem,
-  removeFromCart,
-  clearCart,
-} from "../../actions";
-import { Button, Loader } from "../../common";
-import { useEffect, useState } from "react";
-import { CartList } from "./components";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCart, updateItem, removeItem, clearAll } from '../../modules/cart/cartSlice';
+import { selectCart, selectCartLoading, selectCartError, selectCartTotal } from '../../selectors/cartSelectors';
+import { Button, Loader } from '../../common';
+import { CartList } from './components';
 
 export const CartPage = () => {
-  const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState(null);
-  const [error, setError] = useState("");
-  const [clearing, setClearing] = useState(false);
-
-  const load = async () => {
-    setLoading(true);
-    try {
-      const res = await getCart();
-      setCart(res.cart);
-      setError("");
-    } catch {
-      setError("Failed to load cart");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const dispatch = useDispatch();
+  const cart = useSelector(selectCart);
+  const loading = useSelector(selectCartLoading);
+  const error = useSelector(selectCartError);
+  const total = useSelector(selectCartTotal);
 
   useEffect(() => {
-    load();
-  }, []);
-
-  const handleQuantityChange = async (id, qty) => {
-    await updateCartItem(id, qty);
-    load();
-  };
-
-  const handleRemove = async (id) => {
-    await removeFromCart(id);
-    load();
-  };
-
-  const handleClear = async () => {
-    if (clearing) return;
-    setClearing(true);
-    await clearCart();
-    await load();
-    setClearing(false);
-  };
-
-  const total =
-    cart?.items?.reduce((s, i) => s + i.product.price * i.quantity, 0) || 0;
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   if (loading) return <Loader />;
   if (error) return <div>{error}</div>;
@@ -61,13 +25,11 @@ export const CartPage = () => {
       <h2>Your Cart</h2>
       <CartList
         items={cart.items}
-        onQuantityChange={handleQuantityChange}
-        onRemove={handleRemove}
+        onQuantityChange={(id, qty) => dispatch(updateItem({ id, qty }))}
+        onRemove={(id) => dispatch(removeItem(id))}
       />
       <h3>Total: ${total.toFixed(2)}</h3>
-      <Button onClick={handleClear} disabled={clearing}>
-        {clearing ? "Clearing..." : "Clear cart"}
-      </Button>
+      <Button onClick={() => dispatch(clearAll())}>Clear cart</Button>
     </div>
   );
 };
